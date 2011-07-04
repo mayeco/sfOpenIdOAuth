@@ -1,0 +1,25 @@
+---
+Identity:
+  options:
+    symfony:
+      form:   false
+      filter: false
+  columns:
+    id: 
+      type: integer
+      primary: true
+      autoincrement: true
+    name: string(127)
+    user_id: integer
+    identifier: string(255)
+    status: string(127)
+  relations: 
+    User:
+      class: sfGuardUser
+      type: one
+      foreignType: many
+      local: user_id
+      foreign: id
+      foreignAlias: Tokens
+  actAs:
+    Timestampable: ~

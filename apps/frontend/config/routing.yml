@@ -1,0 +1,49 @@
+
+openid_verify:
+  url:   /openid/verify
+  param: { module: openid, action: verify }
+
+openid_finishauth:
+  url: /openid/finish
+  param: { module: openid, action: finish }
+
+openid_register:
+  url:   /openid/register
+  param: { module: openid, action: register }
+
+openid_error:
+  url: /openid/error
+  param: { module: openid, action: error }
+
+oauth_connect:
+  url:   /oauth/connect
+  param: { module: oauth, action: connect }
+
+oauth_register:
+  url:   /oauth/register
+  param: { module: oauth, action: register }
+
+
+sf_guard_signin:
+  url:   /login
+  param: { module: sfGuardAuth, action: signin }
+
+sf_guard_signout:
+  url:   /logout
+  param: { module: sfGuardAuth, action: signout }
+
+sf_guard_password:
+  url:   /request_password
+  param: { module: sfGuardAuth, action: password }
+
+
+homepage:
+  url:   /
+  param: { module: default, action: index }
+
+default_index:
+  url:   /:module
+  param: { action: index }
+
+default:
+  url:   /:module/:action/*
