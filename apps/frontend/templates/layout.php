@@ -9,6 +9,17 @@
     <?php include_javascripts() ?>
   </head>
   <body>
+    <? if ($sf_user->isAuthenticated()): ?> 
+      user_id: <?php echo $sf_user->getAttribute('user_id', '', 'sfGuardSecurityUser') ?> - 
+      <?php echo link_to('logout', '@sf_guard_signout') ?>
+      <br/>
+    <?php endif ?>
+    <?php if ($sf_user->hasFlash('error')): ?>
+      <b><?php echo $sf_user->getFlash('error') ?></b><br/>
+    <?php endif ?>
+    <?php if ($sf_user->hasFlash('info')): ?>
+      <?php echo $sf_user->getFlash('info') ?><br/>
+    <?php endif ?>
     <?php echo $sf_content ?>
   </body>
 </html>

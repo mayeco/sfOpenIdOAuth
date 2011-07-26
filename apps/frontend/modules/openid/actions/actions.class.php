@@ -14,13 +14,14 @@ class openidActions extends BasesfPHPOpenIDAuthActions {
 
     $identity_token = $identity_token = new Identity();
     $identity_token->setIdentifier($openid_validation_result['identity']);
+    $identity_domain = IdentityTable::getdomainfromidentify($openid_validation_result['identity']);
     $user = null;
 
     if($this->getUser()->isAuthenticated())
     {
 
       $user = $this->getUser()->getGuardUser();
-      $old_identity = IdentityTable::getInstance()->findOneByNameAndIdentifier($openid_validation_result['identity'], $openid_validation_result['identity']);
+      $old_identity = IdentityTable::getInstance()->findOneByNameAndIdentifier($identity_domain, $openid_validation_result['identity']);
 
       if($old_identity && $old_identity->getUser()->getId() != $user->getId()){
 
@@ -34,7 +35,7 @@ class openidActions extends BasesfPHPOpenIDAuthActions {
     else
     {
 
-      $old_identity = IdentityTable::getInstance()->findOneByNameAndIdentifier($openid_validation_result['identity'], $openid_validation_result['identity']);
+      $old_identity = IdentityTable::getInstance()->findOneByNameAndIdentifier($identity_domain, $openid_validation_result['identity']);
       if($old_identity){
 
         $user = $old_identity->getUser();
@@ -79,6 +80,8 @@ class openidActions extends BasesfPHPOpenIDAuthActions {
 
     $this->getUser()->addIdentify($identity_token, $old_identity);
 
+    $this->getUser()->setFlash('info', 'connected to service!');
+    $this->redirect('@default?module=index&action=finish');
   }
 
   public function executeRegister(sfWebRequest $request) {
@@ -87,10 +90,11 @@ class openidActions extends BasesfPHPOpenIDAuthActions {
     $identity_token = unserialize($this->getUser()->getAttribute('identity_token'));
     $old_identity = unserialize($this->getUser()->getAttribute('old_identity'));
 
-    if($user) {
+    if($user && $identity_token) {
 
       $user->setUsername($identity_token->getIdentifier());
       $user->setEmailAddress($identity_token->getIdentifier());
+      $user->setIsActive(false);
       $user->save();
 
       $identity_token->setUserId($user->getId());
@@ -102,29 +106,28 @@ class openidActions extends BasesfPHPOpenIDAuthActions {
     }
 
     $this->getUser()->addIdentify($identity_token, $old_identity);
+    $this->redirect("@default?module=index&action=register");
 
   }
 
-  public function executeIndex() {
-
+  public function executeError(sfWebRequest $request) {
+    //get the message error...
+    $this->getUser()->setFlash('error', $this->getUser()->getFlash('openid_error'));
+    $this->redirect("@default?module=index&action=index");
   }
 
-  public function executeError() {
+  public function executeVerify(sfWebRequest $request) {
 
-  }
+    $this->forward404Unless($request->isMethod('post'));
+    $openididentity = $request->getParameter('identity');
+    $this->forward404Unless($openididentity);
 
-  public function executeVerify() {
-
-    if($_POST && isset($_POST['identity']) ) {
-
-      $getRedirectHtmlResult = $this->getRedirectHtml($_POST['identity']);
-
-      if ($getRedirectHtmlResult['success']) {
-        $this->redirect($getRedirectHtmlResult['url']);
-      } else {
-        $this->getUser()->setFlash('notice', $getRedirectHtmlResult['error']);
-        $this->redirect('@homepage');
-      }
+    $getRedirectHtmlResult = $this->getRedirectHtml($openididentity);
+    if ($getRedirectHtmlResult['success']) {
+      $this->redirect($getRedirectHtmlResult['url']);
+    } else {
+      $this->getUser()->setFlash('error', $getRedirectHtmlResult['error']);
+      $this->redirect("@default?module=index&action=index");
     }
 
   }

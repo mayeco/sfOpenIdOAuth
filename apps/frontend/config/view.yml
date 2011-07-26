@@ -14,7 +14,7 @@ default:
 
   stylesheets:    [main.css]
 
-  javascripts:    []
+  javascripts:    [http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js]
 
   has_layout:     true
   layout:         layout
