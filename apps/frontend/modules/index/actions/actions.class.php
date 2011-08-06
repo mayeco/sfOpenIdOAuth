@@ -70,7 +70,25 @@ class indexActions extends sfActions
 
     if($logintype == 'oauth' && ($service == 'twitter' or $service == 'facebook')){
       $this->getUser()->connect($service);
+    } else if ($logintype == 'openid' && ($service == 'google' or $service == 'yahoo' or $service == 'myopenid')) {
+      $openidurl = null;
+      switch($service){
+        case 'google':
+          $openidurl = 'https://www.google.com/accounts/o8/id';
+        break;
+        case 'yahoo':
+          $openidurl = 'http://me.yahoo.com/';
+        break;
+        case 'myopenid':
+          $openidurl = 'http://myopenid.com/';
+        break;
+      }
+      $this->forward404Unless($openidurl);
+      $this->getUser()->setAttribute('openidurl', $openidurl);
+      $this->forward('openid', 'verifylink');
     } else if ($logintype == 'openid') {
+      $identity = $request->getParameter('identity');
+      $this->forward404Unless($identity);
       $this->forward('openid', 'verify');
     }
 

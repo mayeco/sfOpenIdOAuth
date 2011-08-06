@@ -132,4 +132,20 @@ class openidActions extends BasesfPHPOpenIDAuthActions {
 
   }
 
+  public function executeVerifylink(sfWebRequest $request) {
+
+    $openididentity = $this->getUser()->getAttribute('openidurl', null);
+    $this->forward404Unless($openididentity);
+
+    $getRedirectHtmlResult = $this->getRedirectHtml($openididentity);
+    if ($getRedirectHtmlResult['success']) {
+      $this->getUser()->getAttributeHolder()->remove('openidurl');
+      $this->redirect($getRedirectHtmlResult['url']);
+    } else {
+      $this->getUser()->setFlash('error', $getRedirectHtmlResult['error']);
+      $this->redirect("@default?module=index&action=index");
+    }
+
+  }
+
 }
