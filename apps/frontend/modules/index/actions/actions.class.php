@@ -46,8 +46,8 @@ class indexActions extends sfActions
 
       $username = $request->getParameter('username');
       $email = $request->getParameter('email');
-      $this->forward404Unless($username);
-      $this->forward404Unless($email);
+      $this->redirectUnless($username, '@default?module=index&action=register');
+      $this->redirectUnless($email, '@default?module=index&action=register');
 
       $this->user->setUsername($username);
       $this->user->setEmailAddress($email);
