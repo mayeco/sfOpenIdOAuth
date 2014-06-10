@@ -1,4 +1,4 @@
-a sandbox symfony app that to use openid and oauth to authenticate/create users
+a sandbox symfony app for openid and oauth to authenticate/create users
 
 - sfMelodyPlugin
 - sfDoctrineGuardPlugin
